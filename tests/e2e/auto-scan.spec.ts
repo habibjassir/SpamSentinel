@@ -80,3 +80,27 @@ test('with automatic scan off, nothing is highlighted until the button is presse
   await page.getByRole('button', { name: 'Scan for spam' }).click();
   await expect(page.getByRole('status')).toHaveText('16 of 68 comments');
 });
+
+test('"Next suspicious" walks through every highlighted comment and wraps around', async ({
+  context,
+  optionsPage,
+}) => {
+  await optionsPage.close();
+  const page = await openSampleVideo(context);
+  await expect(page.getByRole('status')).toHaveText('16 of 68 comments');
+
+  const next = page.getByRole('button', { name: 'Next suspicious' });
+  await next.click();
+  await expect(page.getByText('1 of 16 suspicious')).toBeVisible();
+  await expect(labels(page).nth(0)).toBeFocused();
+
+  await next.click();
+  await expect(page.getByText('2 of 16 suspicious')).toBeVisible();
+  await expect(labels(page).nth(1)).toBeFocused();
+
+  for (let i = 0; i < 14; i++) await next.click();
+  await expect(page.getByText('16 of 16 suspicious')).toBeVisible();
+  await next.click();
+  await expect(page.getByText('1 of 16 suspicious')).toBeVisible();
+  await expect(labels(page).nth(0)).toBeFocused();
+});

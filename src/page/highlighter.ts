@@ -76,6 +76,7 @@ export function highlight(thread: Element, reasons: readonly Reason[], t: Messag
   const label = own.ownerDocument.createElement('div');
   label.setAttribute(LABEL_ATTRIBUTE, '');
   label.setAttribute('role', 'note');
+  label.setAttribute('tabindex', '-1'); // focus target for "Next suspicious"
   label.setAttribute('style', LABEL_STYLE);
   label.textContent = text;
   own.before(label);

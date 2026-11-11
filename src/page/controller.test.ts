@@ -75,6 +75,42 @@ describe('page controller', () => {
     controller.destroy();
   });
 
+  it('"Next suspicious" moves through the highlights, focusing each label, and wraps', () => {
+    const controller = createPageController(document, defaultSettings('en'));
+    controller.onLocation(VIDEO);
+    vi.advanceTimersByTime(500);
+    const labels = [...document.querySelectorAll(`[${LABEL_ATTRIBUTE}]`)];
+    const next = () =>
+      document.getElementById(PANEL_HOST_ID)?.shadowRoot?.querySelectorAll('button')[1]?.click();
+    const position = () =>
+      document.getElementById(PANEL_HOST_ID)?.shadowRoot?.querySelector('.position')?.textContent;
+
+    next();
+    expect(position()).toBe('1 of 16 suspicious');
+    expect(document.activeElement).toBe(labels[0]);
+    next();
+    expect(position()).toBe('2 of 16 suspicious');
+    expect(document.activeElement).toBe(labels[1]);
+    for (let i = 0; i < 14; i++) next();
+    expect(position()).toBe('16 of 16 suspicious');
+    next();
+    expect(position()).toBe('1 of 16 suspicious');
+    expect(document.activeElement).toBe(labels[0]);
+    controller.destroy();
+  });
+
+  it('moving to another video resets the position', () => {
+    const controller = createPageController(document, defaultSettings('en'));
+    controller.onLocation(VIDEO);
+    vi.advanceTimersByTime(500);
+    document.getElementById(PANEL_HOST_ID)?.shadowRoot?.querySelectorAll('button')[1]?.click();
+    controller.onLocation(OTHER_VIDEO);
+    expect(
+      document.getElementById(PANEL_HOST_ID)?.shadowRoot?.querySelector('.position')?.textContent,
+    ).toBe('');
+    controller.destroy();
+  });
+
   it('puts the panel back if the page removes it', () => {
     const controller = createPageController(document, defaultSettings('en'));
     controller.onLocation(VIDEO);

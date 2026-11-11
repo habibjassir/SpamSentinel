@@ -8,6 +8,8 @@ export const PANEL_HOST_ID = 'spam-sentinel-panel';
 
 export interface Panel {
   showResult(result: ScanResult): void;
+  /** Shows "N of M suspicious", or hides it when `index` is null. */
+  showPosition(index: number | null, count: number): void;
   /** Back to the idle message, for a new video. */
   reset(): void;
   /** False when the page removed the panel from the document. */
@@ -47,6 +49,10 @@ const STYLE = `
     cursor: pointer;
   }
   button:focus-visible { outline: 2px solid #1a73e8; outline-offset: 2px; }
+  button.secondary { background: transparent; color: inherit; border: 1px solid #dadce0; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .position { margin: 0; font-weight: 500; }
+  .position:empty { display: none; }
   .status { margin: 0; color: #5f6368; }
   @media (prefers-color-scheme: dark) {
     .panel { border-color: #3c4043; background: #202124; color: #e8eaed; }
@@ -55,7 +61,12 @@ const STYLE = `
 `;
 
 /** Mounts the panel once per document and returns its controls. */
-export function createPanel(doc: Document, messages: Messages, onScan: () => void): Panel {
+export function createPanel(
+  doc: Document,
+  messages: Messages,
+  onScan: () => void,
+  onNext: () => void = () => {},
+): Panel {
   doc.getElementById(PANEL_HOST_ID)?.remove();
 
   const host = doc.createElement('div');
@@ -75,22 +86,36 @@ export function createPanel(doc: Document, messages: Messages, onScan: () => voi
   button.type = 'button';
   button.addEventListener('click', onScan);
 
+  const next = doc.createElement('button');
+  next.type = 'button';
+  next.className = 'secondary';
+  next.disabled = true;
+  next.addEventListener('click', onNext);
+
+  const positionText = doc.createElement('p');
+  positionText.className = 'position';
+  positionText.setAttribute('aria-live', 'polite');
+
   const status = doc.createElement('p');
   status.className = 'status';
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
 
-  panel.append(title, button, status);
+  panel.append(title, button, next, positionText, status);
   shadow.append(style, panel);
   doc.body.append(host);
 
   let t = messages;
   let last: ScanResult | null = null;
+  let position: { index: number; count: number } | null = null;
 
   const render = () => {
     panel.setAttribute('aria-label', t.panelTitle);
     title.textContent = t.panelTitle;
     button.textContent = t.scanButton;
+    next.textContent = t.nextButton;
+    next.disabled = !last || last.flagged === 0;
+    positionText.textContent = position ? format(t.panelPosition, position) : '';
     status.textContent =
       last === null
         ? t.panelIdle
@@ -108,8 +133,13 @@ export function createPanel(doc: Document, messages: Messages, onScan: () => voi
     isMounted() {
       return host.isConnected;
     },
+    showPosition(index, count) {
+      position = index === null ? null : { index, count };
+      render();
+    },
     reset() {
       last = null;
+      position = null;
       render();
     },
     setMessages(next) {
