@@ -1,5 +1,5 @@
 // @ts-check
-// Permission policy for the built manifest (CLAUDE.md rule 7): only `storage`,
+// Permission policy for the built manifest (see README, "Permissions"): only `storage`,
 // and host access only to YouTube. Pure function so it can be unit tested.
 
 const ALLOWED_PERMISSIONS = new Set(['storage']);

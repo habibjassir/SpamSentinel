@@ -11,7 +11,7 @@ import type { Comment, KeywordRule } from '../../src/core/index.ts';
 import { fixtureComments, toComment } from './fixture.ts';
 
 // Design goal: 500 comments x 50 rules evaluated in under 200 ms.
-// Do not relax this number; report the measurement instead (CLAUDE.md).
+// Do not relax this number; if it is ever missed, report the measured value instead.
 const BUDGET_MS = 200;
 
 const comments: Comment[] = Array.from({ length: 500 }, (_, i) => {
