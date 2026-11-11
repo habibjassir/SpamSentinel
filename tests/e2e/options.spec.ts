@@ -1,43 +1,51 @@
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { chromium, expect, test, type BrowserContext } from '@playwright/test';
+import { expect, test } from './extension.ts';
 
-// Loads the production build into Chromium the same way a user loads it
-// unpacked, then opens the options page.
-const extensionPath = fileURLToPath(new URL('../../.output/chrome-mv3', import.meta.url));
-
-let context: BrowserContext;
-
-test.beforeAll(async () => {
-  if (!existsSync(extensionPath)) {
-    throw new Error(`No build found at ${extensionPath}. Run "pnpm build" first.`);
-  }
-  context = await chromium.launchPersistentContext('', {
-    channel: 'chromium',
-    args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
-  });
+test('the options page opens in English by default', async ({ optionsPage: page }) => {
+  await expect(page.getByRole('heading', { level: 1, name: 'SpamSentinel' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Keyword rules', exact: true })).toBeVisible();
+  // Starter rules are there on first run.
+  await expect(page.getByRole('row', { name: /presale/ })).toBeVisible();
 });
 
-test.afterAll(async () => {
-  await context?.close();
+test('a new rule is saved and survives a reload', async ({ optionsPage: page }) => {
+  await page.getByRole('button', { name: 'Add rule' }).click();
+  await page.getByLabel('Pattern').fill('giveaway');
+  await page.getByLabel('Category').fill('scam');
+  await page.getByRole('button', { name: 'Save rule' }).click();
+  await expect(page.getByRole('row', { name: /giveaway/ })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole('row', { name: /giveaway/ })).toBeVisible();
 });
 
-// The extension has no background service worker, so its ID is read from the
-// chrome://extensions page (Playwright CSS locators pierce its shadow DOM).
-async function getExtensionId(): Promise<string> {
-  const page = await context.newPage();
-  await page.goto('chrome://extensions');
-  const item = page.locator('extensions-item').first();
-  await expect(item).toBeAttached();
-  const id = await item.getAttribute('id');
-  await page.close();
-  if (!id) throw new Error('Extension ID not found on chrome://extensions');
-  return id;
-}
+test('an invalid regex shows an error and is not saved', async ({ optionsPage: page }) => {
+  await page.getByRole('button', { name: 'Add rule' }).click();
+  await page.getByLabel('Type').selectOption('regex');
+  await page.getByLabel('Pattern').fill('pre(sale');
+  await page.getByRole('button', { name: 'Save rule' }).click();
+  await expect(page.getByRole('alert')).toContainText('not a valid regular expression');
 
-test('the options page opens', async () => {
-  const id = await getExtensionId();
-  const page = await context.newPage();
-  await page.goto(`chrome-extension://${id}/options.html`);
-  await expect(page.getByRole('heading', { name: 'SpamSentinel' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('row', { name: /pre\(sale/ })).toHaveCount(0);
+});
+
+test('turning a detector off survives a reload', async ({ optionsPage: page }) => {
+  const keywords = page.getByRole('checkbox', { name: 'Keyword rules' });
+  await expect(keywords).toBeChecked();
+  await keywords.uncheck();
+  await expect(page.getByText('finds nothing while keyword rules are off')).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole('checkbox', { name: 'Keyword rules' })).not.toBeChecked();
+});
+
+test('switching the language changes the page and survives a reload', async ({
+  optionsPage: page,
+}) => {
+  await page.getByLabel('Language').selectOption('es');
+  await expect(page.getByRole('heading', { name: 'Reglas de palabras clave' })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Reglas de palabras clave' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
 });

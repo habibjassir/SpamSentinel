@@ -61,6 +61,31 @@ describe('validateRule', () => {
   });
 });
 
+describe('error codes', () => {
+  // Stable codes let the options page show errors in the user's language.
+  const codeOf = (overrides: Partial<KeywordRule>) => validateRule(rule(overrides))[0]?.code;
+
+  it('gives every validation error a stable code', () => {
+    expect(codeOf({ id: '' })).toBe('id-empty');
+    expect(codeOf({ pattern: '' })).toBe('pattern-empty');
+    expect(codeOf({ kind: 'regex', pattern: ' ' })).toBe('pattern-empty');
+    expect(codeOf({ pattern: 'bull run' })).toBe('word-has-spaces');
+    expect(codeOf({ kind: 'regex', pattern: '(' })).toBe('regex-invalid');
+    expect(codeOf({ kind: 'regex', pattern: 'a'.repeat(MAX_REGEX_LENGTH + 1) })).toBe(
+      'regex-too-long',
+    );
+    expect(codeOf({ kind: 'regex', pattern: 'x*' })).toBe('regex-matches-empty');
+    expect(codeOf({ minWords: -1 })).toBe('min-words-invalid');
+    expect(codeOf({ maxWords: 1.5 })).toBe('max-words-invalid');
+    expect(codeOf({ minWords: 5, maxWords: 2 })).toBe('words-range');
+  });
+
+  it('marks duplicate ids with their own code', () => {
+    const { errors } = compileRules([rule({ id: 'same' }), rule({ id: 'same' })]);
+    expect(errors.map((e) => e.code)).toEqual(['id-duplicate']);
+  });
+});
+
 describe('compileRules', () => {
   it('compiles enabled valid rules and reports invalid ones', () => {
     const { rules, errors } = compileRules([

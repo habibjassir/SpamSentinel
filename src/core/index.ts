@@ -7,7 +7,7 @@ export type { EvaluationSettings } from './evaluate.ts';
 export { evaluateKeywords } from './keywords.ts';
 export { normalize, normalizePreservingCase } from './normalize.ts';
 export { MAX_REGEX_LENGTH, compileRules, validateRule } from './rules.ts';
-export type { CompiledRule, CompiledRules, RuleError } from './rules.ts';
+export type { CompiledRule, CompiledRules, RuleError, RuleErrorCode } from './rules.ts';
 export type {
   CampaignReason,
   Comment,
