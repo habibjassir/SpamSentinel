@@ -92,6 +92,15 @@ export const en = {
   reasonKeyword: 'Rule: {pattern} ({category})',
   reasonKeywordNoCategory: 'Rule: {pattern}',
   reasonCampaign: 'Mentions {term}, promoted in {count} flagged comments',
+
+  scanHeading: 'Scanning',
+  autoScanToggle: 'Automatic scan',
+  autoScanHelp:
+    'Check comments by themselves as YouTube loads them. When off, use the panel button.',
+  scanDelayLabel: 'Wait before scanning (milliseconds)',
+  scanDelayHelp:
+    'How long to wait after comments stop loading, from {min} to {max}. Lower reacts sooner; higher does less work while you scroll fast.',
+  scanDelayInvalid: 'Enter a whole number from {min} to {max}.',
 };
 
 export type Messages = { readonly [K in keyof typeof en]: string };

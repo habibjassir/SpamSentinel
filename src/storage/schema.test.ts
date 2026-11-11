@@ -40,6 +40,15 @@ describe('SettingsSchema', () => {
     expect(issue?.path).toEqual(['rules', 1, 'id']);
   });
 
+  it('accepts a scan delay from 250 to 5000 ms and rejects anything else', () => {
+    expect(issuesOf({ ...valid, scanDelayMs: 250 })).toEqual([]);
+    expect(issuesOf({ ...valid, scanDelayMs: 5000 })).toEqual([]);
+    expect(issuesOf({ ...valid, scanDelayMs: 249 })[0]?.path).toEqual(['scanDelayMs']);
+    expect(issuesOf({ ...valid, scanDelayMs: 5001 })[0]?.path).toEqual(['scanDelayMs']);
+    expect(issuesOf({ ...valid, scanDelayMs: 500.5 })[0]?.path).toEqual(['scanDelayMs']);
+    expect(issuesOf({ ...valid, autoScan: 'on' })[0]?.path).toEqual(['autoScan']);
+  });
+
   it('drops unknown keys', () => {
     const parsed = SettingsSchema.parse({ ...valid, somethingElse: true });
     expect(parsed).not.toHaveProperty('somethingElse');
@@ -61,6 +70,8 @@ describe('defaultSettings', () => {
     ]);
     expect(settings.allowlist).toEqual(['Bitcoin', 'BTC', 'Ethereum', 'ETH', 'Solana', 'SOL']);
     expect(settings.exemptPhrases).toEqual([]);
+    expect(settings.autoScan).toBe(true);
+    expect(settings.scanDelayMs).toBe(500);
   });
 
   it('returns fresh copies, so editing one result never changes the defaults', () => {

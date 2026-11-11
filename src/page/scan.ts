@@ -4,7 +4,7 @@ import { DEFAULT_CAMPAIGN_OPTIONS, compileRules, evaluateAll } from '../core/ind
 import type { EvaluationSettings } from '../core/index.ts';
 import { messages } from '../i18n/index.ts';
 import type { Settings } from '../storage/index.ts';
-import { clearHighlights, highlight } from './highlighter.ts';
+import { highlight, unhighlight } from './highlighter.ts';
 import { readComments } from './reader.ts';
 
 export interface ScanResult {
@@ -25,10 +25,12 @@ export function toEvaluationSettings(settings: Settings): EvaluationSettings {
   };
 }
 
-/** Clears earlier highlights, then scans every comment loaded under `root`. */
+/**
+ * Scans every comment loaded under `root` and updates highlights in place:
+ * newly flagged comments get one, comments no longer flagged lose theirs, and
+ * unchanged ones are left alone.
+ */
 export function scanPage(root: ParentNode, settings: Settings): ScanResult {
-  clearHighlights(root);
-
   const read = readComments(root);
   const { rules } = compileRules(settings.rules);
   const verdicts = evaluateAll(
@@ -40,8 +42,12 @@ export function scanPage(root: ParentNode, settings: Settings): ScanResult {
   const t = messages[settings.language];
   let flagged = 0;
   verdicts.forEach((verdict, i) => {
-    if (!verdict.flagged) return;
-    highlight(read[i]!.element, verdict.reasons, t);
+    const { element } = read[i]!;
+    if (!verdict.flagged) {
+      unhighlight(element);
+      return;
+    }
+    highlight(element, verdict.reasons, t);
     flagged += 1;
   });
 

@@ -8,6 +8,8 @@ export const PANEL_HOST_ID = 'spam-sentinel-panel';
 
 export interface Panel {
   showResult(result: ScanResult): void;
+  /** Back to the idle message, for a new video. */
+  reset(): void;
   setMessages(messages: Messages): void;
   destroy(): void;
 }
@@ -99,6 +101,10 @@ export function createPanel(doc: Document, messages: Messages, onScan: () => voi
   return {
     showResult(result) {
       last = result;
+      render();
+    },
+    reset() {
+      last = null;
       render();
     },
     setMessages(next) {

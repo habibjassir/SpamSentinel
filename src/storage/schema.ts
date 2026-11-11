@@ -27,6 +27,11 @@ export const RuleSchema = z
     }
   });
 
+/** Wait after the last page change before scanning (debounce), in milliseconds. */
+export const SCAN_DELAY_MIN_MS = 250;
+export const SCAN_DELAY_MAX_MS = 5000;
+export const SCAN_DELAY_DEFAULT_MS = 500;
+
 export const SettingsSchema = z
   .object({
     language: z.enum(LANGUAGES),
@@ -36,6 +41,9 @@ export const SettingsSchema = z
     rules: z.array(RuleSchema),
     exemptPhrases: z.array(z.string()),
     allowlist: z.array(z.string()),
+    /** Scan automatically as comments load (version 2). */
+    autoScan: z.boolean(),
+    scanDelayMs: z.number().int().min(SCAN_DELAY_MIN_MS).max(SCAN_DELAY_MAX_MS),
   })
   .superRefine((settings, ctx) => {
     const seen = new Set<string>();

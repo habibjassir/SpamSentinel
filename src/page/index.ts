@@ -11,3 +11,8 @@ export { findCommentsSection, readComments, readVideoOwner } from './reader.ts';
 export type { ReadComment } from './reader.ts';
 export { scanPage, toEvaluationSettings } from './scan.ts';
 export type { ScanResult } from './scan.ts';
+export { createPageController } from './controller.ts';
+export type { PageController } from './controller.ts';
+export { createScanObserver } from './observer.ts';
+export type { ScanObserver } from './observer.ts';
+export { VIDEO_PATH, isVideoPage } from './selectors.ts';

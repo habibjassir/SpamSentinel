@@ -18,3 +18,9 @@ export const SELECTORS = {
   /** Channel link of the video owner. The author badge does not identify the owner. */
   videoOwnerLink: 'ytd-video-owner-renderer a[href^="/@"]',
 } as const;
+
+/** Path of a normal video page ("/watch?v=…"). Shorts ("/shorts/…") come in a later increment. */
+export const VIDEO_PATH = '/watch';
+
+/** True when the URL is a YouTube video page. */
+export const isVideoPage = (url: string | URL): boolean => new URL(url).pathname === VIDEO_PATH;
