@@ -49,3 +49,21 @@ test('switching the language changes the page and survives a reload', async ({
   await expect(page.getByRole('heading', { name: 'Reglas de palabras clave' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
 });
+
+test('the scan delay is saved when valid and rejected when out of range', async ({
+  optionsPage: page,
+}) => {
+  const delay = page.getByLabel('Wait before scanning (milliseconds)');
+  await expect(delay).toHaveValue('500');
+
+  await delay.fill('100');
+  await delay.press('Enter');
+  await expect(page.getByRole('alert')).toContainText('from 250 to 5000');
+
+  await delay.fill('1000');
+  await delay.press('Enter');
+  await expect(page.getByRole('alert')).toHaveCount(0);
+
+  await page.reload();
+  await expect(page.getByLabel('Wait before scanning (milliseconds)')).toHaveValue('1000');
+});

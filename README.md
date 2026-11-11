@@ -4,8 +4,8 @@ A Chrome and Brave extension (Manifest V3) for **viewers** of YouTube videos. It
 comments already loaded on the page, evaluates them with deterministic rules (no AI), and
 highlights the ones that look like spam, showing which rule matched.
 
-> **Status:** early development. Detection rules and the options page work; scanning YouTube
-> pages arrives in later increments (see [`docs/design.md`](docs/design.md), in Spanish).
+> **Status:** early development. On video pages the extension scans comments as they load and
+> highlights suspicious ones; see [`docs/design.md`](docs/design.md) (in Spanish) for the plan.
 
 ## What it does
 
@@ -30,6 +30,8 @@ Open the extension's options (right-click the toolbar icon → **Options**) to:
 - manage exempt phrases (comments containing them are never flagged) and allowed names (never
   treated as campaign terms);
 - turn each detector on or off;
+- turn automatic scanning on or off, and set how long to wait after comments stop loading
+  (250 to 5000 ms, default 500);
 - switch the interface between Spanish and English.
 
 Changes are saved automatically in your browser.

@@ -94,6 +94,30 @@ describe('scanPage on the sample page', () => {
   });
 });
 
+describe('scanning again updates highlights in place', () => {
+  it('keeps the same label elements when nothing changed', () => {
+    scanPage(doc, defaultSettings('en'));
+    const before = labels();
+    scanPage(doc, defaultSettings('en'));
+    const after = labels();
+    expect(after).toHaveLength(16);
+    after.forEach((label, i) => expect(label).toBe(before[i]));
+  });
+
+  it('updates the label text when the reasons change', () => {
+    scanPage(doc, defaultSettings('en'));
+    scanPage(doc, { ...defaultSettings('en'), campaignsEnabled: false });
+    expect(labels().some((l) => l.textContent?.includes('Mentions'))).toBe(false);
+    expect(labels().length).toBeGreaterThan(0);
+  });
+
+  it('updates the label language when the interface language changes', () => {
+    scanPage(doc, defaultSettings('en'));
+    scanPage(doc, defaultSettings('es'));
+    expect(labels().every((l) => l.textContent?.startsWith('Posible spam: '))).toBe(true);
+  });
+});
+
 describe('clearHighlights', () => {
   it('removes every border, label and inline style it added', () => {
     const untouched = doc.body.innerHTML;

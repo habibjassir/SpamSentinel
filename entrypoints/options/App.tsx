@@ -6,6 +6,7 @@ import { DetectorSwitches } from './DetectorSwitches.tsx';
 import { LanguageSelect } from './LanguageSelect.tsx';
 import { ListEditor } from './ListEditor.tsx';
 import { RuleList } from './RuleList.tsx';
+import { ScanSettings } from './ScanSettings.tsx';
 
 /**
  * Options page. Every change is saved immediately (autosave); rules have their
@@ -60,6 +61,13 @@ export default function App() {
         t={t}
         keywordsEnabled={settings.keywordsEnabled}
         campaignsEnabled={settings.campaignsEnabled}
+        onChange={update}
+      />
+
+      <ScanSettings
+        t={t}
+        autoScan={settings.autoScan}
+        scanDelayMs={settings.scanDelayMs}
         onChange={update}
       />
 

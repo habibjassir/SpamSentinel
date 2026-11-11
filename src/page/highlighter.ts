@@ -36,13 +36,39 @@ export function formatReason(reason: Reason, t: Messages): string {
     : format(t.reasonKeywordNoCategory, { pattern: reason.pattern });
 }
 
+/** The label this extension placed right before `own`, if any. */
+function labelBefore(own: Element): Element | null {
+  const previous = own.previousElementSibling;
+  return previous?.hasAttribute(LABEL_ATTRIBUTE) ? previous : null;
+}
+
+function removeBorder(own: HTMLElement): void {
+  own.removeAttribute(HIGHLIGHT_ATTRIBUTE);
+  for (const property of Object.keys(BORDER)) {
+    own.style.removeProperty(property.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`));
+  }
+  if (own.getAttribute('style') === '') own.removeAttribute('style');
+}
+
 /**
- * Highlights one comment thread. The label goes just before the thread's own
- * comment, outside its text, so the reader never picks it up.
+ * Highlights one comment thread, or updates its label if it is already
+ * highlighted. The label goes just before the thread's own comment, outside its
+ * text, so the reader never picks it up. Nothing is touched when the label
+ * already says the same thing, so rescanning does not make the page flicker.
  */
 export function highlight(thread: Element, reasons: readonly Reason[], t: Messages): void {
   const own = thread.querySelector<HTMLElement>(SELECTORS.ownComment);
-  if (!own || own.hasAttribute(HIGHLIGHT_ATTRIBUTE)) return;
+  if (!own) return;
+
+  const text = format(t.flaggedLabel, {
+    reasons: reasons.map((r) => formatReason(r, t)).join(' · '),
+  });
+
+  const existing = labelBefore(own);
+  if (existing && own.hasAttribute(HIGHLIGHT_ATTRIBUTE)) {
+    if (existing.textContent !== text) existing.textContent = text;
+    return;
+  }
 
   own.setAttribute(HIGHLIGHT_ATTRIBUTE, '');
   Object.assign(own.style, BORDER);
@@ -51,20 +77,22 @@ export function highlight(thread: Element, reasons: readonly Reason[], t: Messag
   label.setAttribute(LABEL_ATTRIBUTE, '');
   label.setAttribute('role', 'note');
   label.setAttribute('style', LABEL_STYLE);
-  label.textContent = format(t.flaggedLabel, {
-    reasons: reasons.map((r) => formatReason(r, t)).join(' · '),
-  });
+  label.textContent = text;
   own.before(label);
+}
+
+/** Removes the highlight from one thread, if it has one. */
+export function unhighlight(thread: Element): void {
+  const own = thread.querySelector<HTMLElement>(SELECTORS.ownComment);
+  if (!own) return;
+  labelBefore(own)?.remove();
+  if (own.hasAttribute(HIGHLIGHT_ATTRIBUTE)) removeBorder(own);
 }
 
 /** Removes every border, label and style added by `highlight`. */
 export function clearHighlights(root: ParentNode): void {
   for (const label of root.querySelectorAll(`[${LABEL_ATTRIBUTE}]`)) label.remove();
   for (const own of root.querySelectorAll<HTMLElement>(`[${HIGHLIGHT_ATTRIBUTE}]`)) {
-    own.removeAttribute(HIGHLIGHT_ATTRIBUTE);
-    for (const property of Object.keys(BORDER)) {
-      own.style.removeProperty(property.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`));
-    }
-    if (own.getAttribute('style') === '') own.removeAttribute('style');
+    removeBorder(own);
   }
 }

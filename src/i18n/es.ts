@@ -95,4 +95,13 @@ export const es: Messages = {
   reasonKeyword: 'Regla: {pattern} ({category})',
   reasonKeywordNoCategory: 'Regla: {pattern}',
   reasonCampaign: 'Menciona {term}, promovido en {count} comentarios marcados',
+
+  scanHeading: 'Escaneo',
+  autoScanToggle: 'Escaneo automático',
+  autoScanHelp:
+    'Revisa los comentarios solo, a medida que YouTube los carga. Si está apagado, usa el botón del panel.',
+  scanDelayLabel: 'Esperar antes de escanear (milisegundos)',
+  scanDelayHelp:
+    'Cuánto esperar después de que los comentarios dejan de cargarse, de {min} a {max}. Un valor bajo reacciona antes; uno alto trabaja menos mientras bajas rápido.',
+  scanDelayInvalid: 'Escribe un número entero de {min} a {max}.',
 };

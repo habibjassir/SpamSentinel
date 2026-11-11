@@ -1,7 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakeBrowser } from 'wxt/testing/fake-browser';
 import { defaultSettings } from './defaults.ts';
-import { SETTINGS_KEY, loadSettings, saveSettings, watchSettings } from './settings.ts';
+import {
+  SETTINGS_KEY,
+  loadSettings,
+  migrateToV2,
+  saveSettings,
+  settingsStorageItem,
+  watchSettings,
+} from './settings.ts';
 
 // WXT's fake browser keeps chrome.storage in memory; reset it before each test.
 beforeEach(() => {
@@ -40,6 +47,21 @@ describe('settings storage', () => {
     expect(await loadSettings('en-US')).toEqual(good);
   });
 
+  it('migrates version 1 settings to version 2, keeping every existing value', async () => {
+    const v1 = {
+      language: 'es',
+      keywordsEnabled: false,
+      campaignsEnabled: true,
+      rules: [defaultSettings('en').rules[0]],
+      exemptPhrases: ['es una estafa'],
+      allowlist: ['Bitcoin'],
+    };
+    // Version 1 data has no version metadata, as stored by Increment 3.
+    await fakeBrowser.storage.local.set({ [storedKey]: v1 });
+    await settingsStorageItem.migrate();
+    expect(await loadSettings('en-US')).toEqual({ ...v1, autoScan: true, scanDelayMs: 500 });
+  });
+
   it('notifies watchers with validated settings', async () => {
     const callback = vi.fn();
     const unwatch = watchSettings(callback, 'en-US');
@@ -47,5 +69,28 @@ describe('settings storage', () => {
     await saveSettings(settings);
     await vi.waitFor(() => expect(callback).toHaveBeenCalledWith(settings));
     unwatch();
+  });
+});
+
+describe('migrateToV2', () => {
+  it('adds the automatic scan defaults and keeps everything else', () => {
+    expect(migrateToV2({ language: 'en', rules: [] })).toEqual({
+      language: 'en',
+      rules: [],
+      autoScan: true,
+      scanDelayMs: 500,
+    });
+  });
+
+  it('keeps values that already exist', () => {
+    expect(migrateToV2({ autoScan: false, scanDelayMs: 1000 })).toEqual({
+      autoScan: false,
+      scanDelayMs: 1000,
+    });
+  });
+
+  it('leaves non-object data alone, so validation can replace it with defaults', () => {
+    expect(migrateToV2('broken')).toBe('broken');
+    expect(migrateToV2(null)).toBeNull();
   });
 });
