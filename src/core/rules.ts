@@ -6,9 +6,24 @@ import type { KeywordRule } from './types.ts';
 /** Longest regex a user may save. Keeps badly written patterns from freezing the page. */
 export const MAX_REGEX_LENGTH = 200;
 
+/** Stable identifiers for validation errors, so a UI can translate them. */
+export type RuleErrorCode =
+  | 'id-empty'
+  | 'id-duplicate'
+  | 'pattern-empty'
+  | 'word-has-spaces'
+  | 'regex-invalid'
+  | 'regex-too-long'
+  | 'regex-matches-empty'
+  | 'min-words-invalid'
+  | 'max-words-invalid'
+  | 'words-range';
+
 export interface RuleError {
   ruleId: string;
   field: 'id' | 'pattern' | 'minWords' | 'maxWords';
+  code: RuleErrorCode;
+  /** English description, for logs and tests. UIs should translate `code` instead. */
   message: string;
 }
 
@@ -34,14 +49,15 @@ const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&
 type BuildResult = { regex: RegExp } | { error: RuleError };
 
 function buildRegex(rule: KeywordRule): BuildResult {
-  const patternError = (message: string): BuildResult => ({
-    error: { ruleId: rule.id, field: 'pattern', message },
+  const patternError = (code: RuleErrorCode, message: string): BuildResult => ({
+    error: { ruleId: rule.id, field: 'pattern', code, message },
   });
 
   if (rule.kind === 'regex') {
-    if (rule.pattern.trim() === '') return patternError('Pattern is empty.');
+    if (rule.pattern.trim() === '') return patternError('pattern-empty', 'Pattern is empty.');
     if (rule.pattern.length > MAX_REGEX_LENGTH) {
       return patternError(
+        'regex-too-long',
         `Regular expression is too long: ${rule.pattern.length} characters, the limit is ${MAX_REGEX_LENGTH} characters.`,
       );
     }
@@ -51,21 +67,28 @@ function buildRegex(rule: KeywordRule): BuildResult {
     } catch (e) {
       const detail = e instanceof Error ? e.message : String(e);
       return patternError(
+        'regex-invalid',
         detail.startsWith('Invalid regular expression')
           ? `${detail}.`
           : `Invalid regular expression: ${detail}.`,
       );
     }
     if (regex.test('')) {
-      return patternError('Regular expression matches empty text, so it would flag every comment.');
+      return patternError(
+        'regex-matches-empty',
+        'Regular expression matches empty text, so it would flag every comment.',
+      );
     }
     return { regex };
   }
 
   const pattern = normalize(rule.pattern);
-  if (pattern === '') return patternError('Pattern is empty.');
+  if (pattern === '') return patternError('pattern-empty', 'Pattern is empty.');
   if (rule.kind === 'word' && pattern.includes(' ')) {
-    return patternError('A word rule must be a single word. Use a phrase rule instead.');
+    return patternError(
+      'word-has-spaces',
+      'A word rule must be a single word. Use a phrase rule instead.',
+    );
   }
   const body = escapeRegExp(pattern);
   const source = rule.match === 'whole-word' ? `${WORD_START}${body}${WORD_END}` : body;
@@ -80,6 +103,7 @@ function validateWordLimits(rule: KeywordRule): RuleError[] {
     errors.push({
       ruleId: rule.id,
       field: 'minWords',
+      code: 'min-words-invalid',
       message: 'Minimum words must be a whole number of 0 or more.',
     });
   }
@@ -87,6 +111,7 @@ function validateWordLimits(rule: KeywordRule): RuleError[] {
     errors.push({
       ruleId: rule.id,
       field: 'maxWords',
+      code: 'max-words-invalid',
       message: 'Maximum words must be a whole number of 0 or more.',
     });
   }
@@ -99,6 +124,7 @@ function validateWordLimits(rule: KeywordRule): RuleError[] {
     errors.push({
       ruleId: rule.id,
       field: 'maxWords',
+      code: 'words-range',
       message: 'Maximum words cannot be lower than minimum words.',
     });
   }
@@ -109,7 +135,7 @@ function validateWordLimits(rule: KeywordRule): RuleError[] {
 export function validateRule(rule: KeywordRule): RuleError[] {
   const errors: RuleError[] = [];
   if (rule.id.trim() === '') {
-    errors.push({ ruleId: rule.id, field: 'id', message: 'Rule id is empty.' });
+    errors.push({ ruleId: rule.id, field: 'id', code: 'id-empty', message: 'Rule id is empty.' });
   }
   const built = buildRegex(rule);
   if ('error' in built) errors.push(built.error);
@@ -129,7 +155,12 @@ export function compileRules(rules: readonly KeywordRule[]): CompiledRules {
   for (const rule of rules) {
     const ruleErrors = validateRule(rule);
     if (seenIds.has(rule.id)) {
-      ruleErrors.push({ ruleId: rule.id, field: 'id', message: `Duplicate rule id "${rule.id}".` });
+      ruleErrors.push({
+        ruleId: rule.id,
+        field: 'id',
+        code: 'id-duplicate',
+        message: `Duplicate rule id "${rule.id}".`,
+      });
     }
     seenIds.add(rule.id);
 

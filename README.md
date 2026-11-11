@@ -4,8 +4,8 @@ A Chrome and Brave extension (Manifest V3) for **viewers** of YouTube videos. It
 comments already loaded on the page, evaluates them with deterministic rules (no AI), and
 highlights the ones that look like spam, showing which rule matched.
 
-> **Status:** early development. Increment 0 is an empty extension that builds; detection
-> arrives in later increments (see [`docs/design.md`](docs/design.md), in Spanish).
+> **Status:** early development. Detection rules and the options page work; scanning YouTube
+> pages arrives in later increments (see [`docs/design.md`](docs/design.md), in Spanish).
 
 ## What it does
 
@@ -20,6 +20,19 @@ highlights the ones that look like spam, showing which rule matched.
   at risk.
 - It makes **no network calls**: no YouTube API, no server, no analytics, no remote code.
 - It does not store or send the comments it reads.
+
+## Options
+
+Open the extension's options (right-click the toolbar icon → **Options**) to:
+
+- add, edit, enable or delete keyword rules (word, phrase or regular expression, with optional
+  word limits);
+- manage exempt phrases (comments containing them are never flagged) and allowed names (never
+  treated as campaign terms);
+- turn each detector on or off;
+- switch the interface between Spanish and English.
+
+Changes are saved automatically in your browser.
 
 ## Permissions
 

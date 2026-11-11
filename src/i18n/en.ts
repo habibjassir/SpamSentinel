@@ -1,0 +1,87 @@
+// English strings. This file defines the keys: `es.ts` must provide every one of them.
+// Placeholders use {name} and are filled by `format`.
+export const en = {
+  appTitle: 'SpamSentinel',
+  appSubtitle: 'Rules and settings. Everything stays in this browser.',
+  loading: 'Loading…',
+  saveFailed: 'Could not save the changes: {error}',
+
+  languageLabel: 'Language',
+  languageEs: 'Español',
+  languageEn: 'English',
+
+  detectorsHeading: 'Detectors',
+  keywordsToggle: 'Keyword rules',
+  keywordsToggleHelp: 'Flag comments that match your rules.',
+  campaignsToggle: 'Repeated campaign',
+  campaignsToggleHelp:
+    'Flag every comment that names a term promoted by several flagged comments from different authors.',
+  campaignNeedsKeywords:
+    'The repeated-campaign detector learns from keyword matches, so it finds nothing while keyword rules are off.',
+
+  rulesHeading: 'Keyword rules',
+  rulesHelp: 'One matching rule is enough to flag a comment.',
+  rulesEmpty: 'No rules yet.',
+  columnPattern: 'Pattern',
+  columnKind: 'Type',
+  columnMatch: 'Match',
+  columnWords: 'Length',
+  columnCategory: 'Category',
+  columnActive: 'Active',
+  columnActions: 'Actions',
+  ruleActiveLabel: 'Active: {pattern}',
+  addRule: 'Add rule',
+  editRule: 'Edit',
+  editRuleLabel: 'Edit rule {pattern}',
+  deleteRule: 'Delete',
+  deleteRuleLabel: 'Delete rule {pattern}',
+
+  ruleFormNew: 'New rule',
+  ruleFormEdit: 'Edit rule',
+  fieldKind: 'Type',
+  fieldPattern: 'Pattern',
+  fieldMatch: 'Match',
+  fieldMinWords: 'Minimum words',
+  fieldMaxWords: 'Maximum words',
+  fieldWordsHelp: 'Optional. The rule only applies to comments within these limits.',
+  fieldCategory: 'Category',
+  fieldCategoryHelp: 'Free label, for example crypto or scam.',
+  fieldEnabled: 'Active',
+  kindWord: 'Word',
+  kindPhrase: 'Phrase',
+  kindRegex: 'Regular expression',
+  matchWholeWord: 'Whole word',
+  matchSubstring: 'Part of a word',
+  regexNote: 'Regular expressions run on normalized text: lowercase, without accents.',
+  saveRule: 'Save rule',
+  cancel: 'Cancel',
+
+  wordsAny: 'Any',
+  wordsMin: '{min}+ words',
+  wordsMax: 'Up to {max} words',
+  wordsBetween: '{min} to {max} words',
+
+  errorIdEmpty: 'The rule has no id.',
+  errorIdDuplicate: 'Another rule already uses this id.',
+  errorPatternEmpty: 'Write a pattern.',
+  errorWordHasSpaces: 'A word rule must be a single word. Choose Phrase instead.',
+  errorRegexInvalid: 'This is not a valid regular expression.',
+  errorRegexTooLong: 'The regular expression is too long: the limit is {limit} characters.',
+  errorRegexMatchesEmpty:
+    'This regular expression matches empty text, so it would flag every comment.',
+  errorMinWordsInvalid: 'Minimum words must be a whole number of 0 or more.',
+  errorMaxWordsInvalid: 'Maximum words must be a whole number of 0 or more.',
+  errorWordsRange: 'Maximum words cannot be lower than minimum words.',
+
+  exemptHeading: 'Exempt phrases',
+  exemptHelp: 'A comment that contains any of these phrases is never flagged.',
+  exemptPlaceholder: 'For example: was a scam',
+  allowlistHeading: 'Allowed names',
+  allowlistHelp: 'These names never become campaign terms, in any letter case.',
+  allowlistPlaceholder: 'For example: Bitcoin',
+  listAdd: 'Add',
+  listRemoveLabel: 'Remove {item}',
+  listEmpty: 'Nothing here yet.',
+};
+
+export type Messages = { readonly [K in keyof typeof en]: string };

@@ -1,17 +1,32 @@
 import { defineConfig } from 'vitest/config';
+import { WxtVitest } from 'wxt/testing/vitest-plugin';
 
-// The WXT Vitest plugin (fake browser, auto-imports) is intentionally not used
-// yet: the core must not see any browser API, even in tests. Add it when
-// storage tests need it (Increment 3).
+// Two projects with different environments:
+// - core: no browser at all, so the pure core cannot lean on browser APIs even in tests.
+// - extension: WXT's plugin provides an in-memory fake browser (storage, i18n code).
 export default defineConfig({
   test: {
-    include: ['src/**/*.test.ts', 'tests/unit/**/*.test.ts'],
+    projects: [
+      {
+        test: {
+          name: 'core',
+          include: ['src/core/**/*.test.ts', 'tests/unit/**/*.test.ts'],
+        },
+      },
+      {
+        plugins: [WxtVitest()],
+        test: {
+          name: 'extension',
+          include: ['src/storage/**/*.test.ts', 'src/i18n/**/*.test.ts'],
+        },
+      },
+    ],
     coverage: {
       provider: 'v8',
       include: ['src/core/**'],
       exclude: ['src/core/**/*.test.ts'],
       reporter: ['text', 'html'],
-      // Acceptance criterion (Increment 1): at least 90% line coverage of src/core/.
+      // Acceptance criterion: at least 90% line coverage of src/core/.
       thresholds: { lines: 90 },
     },
   },
