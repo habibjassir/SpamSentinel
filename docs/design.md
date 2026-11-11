@@ -22,7 +22,7 @@ por ti.
 | Superficies | Videos normales y Shorts. El chat en vivo queda para después. | 10 nov 2026 |
 | Stack | WXT, TypeScript y React | 10 nov 2026 |
 | Repositorio | Público. Los casos de prueba usan seudónimos. | 10 nov 2026 |
-| Autoría en Git | Commits, pull requests y merges sin firma ni atribución a Claude | 10 nov 2026 |
+| Autoría en Git | Commits, pull requests y merges solo con la identidad de Git del autor | 10 nov 2026 |
 | Distribución | Uso personal, carga manual | 9 nov 2026 |
 
 Al quitar el modo dueño desaparecieron la API de YouTube, el inicio de sesión con Google,
@@ -124,7 +124,7 @@ automáticas pueden comprobar.
 
 ### Decisión
 
-Opción A. El requisito de que Claude Code se verifique solo, y después el escaneo
+Opción A. El requisito de que cada incremento se verifique de forma automática, y después el escaneo
 automático, pesan más que el permiso más estrecho. El content script se limita a las
 páginas de video.
 
@@ -227,9 +227,9 @@ lo recomiendan para proyectos existentes, no nuevos.
 Brave usa el motor de Chromium, así que el mismo paquete sirve para ambos. No queda ninguna
 diferencia conocida entre los dos; se confirma cargando el zip en cada uno.
 
-## Workflow de construcción con Claude Code
+## Workflow de construcción
 
-Cada incremento termina con una prueba que Claude Code puede ejecutar solo, y GitHub
+Cada incremento termina con una prueba que se ejecuta de forma automática, y GitHub
 Actions repite esa misma prueba en cada pull request. Lo que una máquina no puede comprobar
 queda en una lista manual corta y explícita.
 
@@ -237,11 +237,11 @@ queda en una lista manual corta y explícita.
 
 | Capa | Herramienta | Qué demuestra | Quién la corre |
 | --- | --- | --- | --- |
-| Tipos | `tsc --noEmit` en modo estricto | El código es coherente | Claude y CI |
-| Estilo y fronteras | ESLint | El núcleo no toca `chrome.*` ni el DOM | Claude y CI |
-| Unitarias | Vitest sobre el núcleo | Normalización y detectores deciden bien | Claude y CI |
-| Lector de página | Vitest con un DOM simulado y la página de muestra | Los selectores extraen texto y autor correctos | Claude y CI |
-| Extremo a extremo | Playwright; la dirección del video se sirve desde la página de muestra | La extensión real resalta y las opciones se guardan | Claude y CI |
+| Tipos | `tsc --noEmit` en modo estricto | El código es coherente | Local y CI |
+| Estilo y fronteras | ESLint | El núcleo no toca `chrome.*` ni el DOM | Local y CI |
+| Unitarias | Vitest sobre el núcleo | Normalización y detectores deciden bien | Local y CI |
+| Lector de página | Vitest con un DOM simulado y la página de muestra | Los selectores extraen texto y autor correctos | Local y CI |
+| Extremo a extremo | Playwright; la dirección del video se sirve desde la página de muestra | La extensión real resalta y las opciones se guardan | Local y CI |
 | Empaquetado | Compilación y zip | El paquete se puede instalar | CI |
 | Manual | Lista de pasos en el pull request | Funciona en un video real, en Chrome y en Brave | Habib |
 
@@ -252,21 +252,21 @@ revisión manual.
 ### Ciclo de cada incremento
 
 1. Un issue define el objetivo y los criterios de aceptación.
-2. Claude Code propone un plan corto y Habib lo aprueba.
-3. Claude escribe primero las pruebas, que deben fallar.
-4. Claude implementa hasta que `pnpm verify` pasa en local.
-5. Claude abre el pull request en una rama propia.
-6. GitHub Actions corre las mismas capas. Claude lee el resultado con `gh pr checks` y corrige si algo falla.
+2. Se propone un plan corto y Habib lo aprueba.
+3. Se escriben primero las pruebas, que deben fallar.
+4. Se implementa hasta que `pnpm verify` pasa en local.
+5. Se abre el pull request en una rama propia.
+6. GitHub Actions corre las mismas capas. Se lee el resultado con `gh pr checks` y se corrige si algo falla.
 7. Habib revisa el diff y ejecuta la lista manual, si la hay.
 8. Se fusiona y se actualizan la documentación y el registro de cambios.
 
-Los commits, los pull requests y los merges no llevan firma ni atribución a Claude.
+Los commits, los pull requests y los merges llevan solo la identidad de Git del autor.
 
 ### Incrementos
 
 | # | Entrega | Verificación automática | Verificación manual |
 | --- | --- | --- | --- |
-| 0 | Repositorio público, WXT, CI, `CLAUDE.md`, extensión vacía que compila | CI en verde y zip como artefacto | Cargar el zip en Chrome y en Brave |
+| 0 | Repositorio público, WXT, CI, extensión vacía que compila | CI en verde y zip como artefacto | Cargar el zip en Chrome y en Brave |
 | 1 | Núcleo: normalizador y reglas de palabras clave con límite de longitud | Unitarias sobre los 75 comentarios reales: 15 de 21 spam, 0 de 54 legítimos; prueba de la meta de tiempo | Ninguna |
 | 2 | Núcleo: detector de campaña repetida y lista de permitidos | Unitarias sobre la misma muestra: 21 de 21 spam, 0 de 54 legítimos | Ninguna |
 | 3 | Almacenamiento y página de opciones en español e inglés | Unitarias de esquema y Playwright sobre opciones | Crear tres reglas a mano |
