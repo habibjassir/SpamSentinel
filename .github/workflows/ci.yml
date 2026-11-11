@@ -38,8 +38,9 @@ jobs:
       - name: Install Playwright Chromium
         timeout-minutes: 8
         run: |
-          for attempt in 1 2 3; do
-            if pnpm exec playwright install --with-deps chromium; then exit 0; fi
+          for attempt in 1 2; do
+            # When mirrors are unreachable, apt waits on DNS for minutes; cap each attempt.
+            if timeout 150 pnpm exec playwright install --with-deps chromium; then exit 0; fi
             echo "::warning::Attempt $attempt to install Chromium with system packages failed."
             sleep 20
           done
