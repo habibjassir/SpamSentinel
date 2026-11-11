@@ -50,10 +50,13 @@ test('moving to a video without a reload shows the panel; leaving hides it', asy
   await expect(page.locator('#home')).toBeVisible();
   await expect(panel(page)).toHaveCount(0);
 
-  // YouTube changes the URL first, then renders the new page in place.
+  // YouTube changes the URL first, then renders the new page inside its app,
+  // without replacing the whole <body>.
   await page.evaluate((body) => {
     history.pushState({}, '', '/watch?v=WkKhJx0Rz1I');
-    document.body.innerHTML = body;
+    const app = document.createElement('div');
+    app.innerHTML = body;
+    document.getElementById('home')!.replaceWith(...app.childNodes);
   }, sampleBody);
   await expect(page.getByRole('status')).toHaveText('16 of 68 comments');
 

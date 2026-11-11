@@ -10,6 +10,8 @@ export interface Panel {
   showResult(result: ScanResult): void;
   /** Back to the idle message, for a new video. */
   reset(): void;
+  /** False when the page removed the panel from the document. */
+  isMounted(): boolean;
   setMessages(messages: Messages): void;
   destroy(): void;
 }
@@ -102,6 +104,9 @@ export function createPanel(doc: Document, messages: Messages, onScan: () => voi
     showResult(result) {
       last = result;
       render();
+    },
+    isMounted() {
+      return host.isConnected;
     },
     reset() {
       last = null;

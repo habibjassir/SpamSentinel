@@ -75,6 +75,15 @@ describe('page controller', () => {
     controller.destroy();
   });
 
+  it('puts the panel back if the page removes it', () => {
+    const controller = createPageController(document, defaultSettings('en'));
+    controller.onLocation(VIDEO);
+    document.getElementById(PANEL_HOST_ID)?.remove();
+    vi.advanceTimersByTime(500);
+    expect(panelStatus()).toBe('16 of 68 comments');
+    controller.destroy();
+  });
+
   it('applies new settings: turning automatic scan on starts scanning', () => {
     const controller = createPageController(document, {
       ...defaultSettings('en'),

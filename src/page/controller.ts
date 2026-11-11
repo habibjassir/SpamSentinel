@@ -22,9 +22,19 @@ export function createPageController(doc: Document, initialSettings: Settings): 
   let panel: Panel | null = null;
   let currentVideo: string | null = null;
 
-  const scan = () => {
-    if (panel) panel.showResult(scanPage(doc, settings));
+  /** The page may remove the panel while re-rendering; put it back when needed. */
+  const ensurePanel = (): Panel => {
+    if (!panel || !panel.isMounted()) {
+      panel?.destroy();
+      panel = createPanel(doc, messages[settings.language], scan);
+    }
+    return panel;
   };
+
+  function scan() {
+    if (currentVideo === null) return;
+    ensurePanel().showResult(scanPage(doc, settings));
+  }
   const observer = createScanObserver(doc.body, settings.scanDelayMs, scan);
 
   const startWatching = () => {
@@ -43,9 +53,8 @@ export function createPageController(doc: Document, initialSettings: Settings): 
   const enter = (url: string) => {
     observer.stop();
     clearHighlights(doc);
-    if (panel) panel.reset();
-    else panel = createPanel(doc, messages[settings.language], scan);
     currentVideo = url;
+    ensurePanel().reset();
     if (settings.autoScan) startWatching();
   };
 
