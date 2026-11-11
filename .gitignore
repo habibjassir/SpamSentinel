@@ -3,3 +3,11 @@ fixtures/*.private.json
 
 # Claude Code local folder (guidance, settings, planning drafts): kept out of the repo
 .claude/
+
+# Dependencies and generated output
+node_modules/
+.output/
+.wxt/
+coverage/
+test-results/
+playwright-report/

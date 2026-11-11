@@ -1,0 +1,8 @@
+// Lint fixture, not real code. The boundary test lints this text as if it
+// lived in src/core/. Every line below must be rejected by ESLint.
+import { storage } from '#imports';
+import { defineContentScript } from 'wxt/utils/define-content-script';
+
+export function leaksBrowserApis(): unknown[] {
+  return [chrome.runtime.id, browser.runtime.id, document.title, window.location.href, storage, defineContentScript];
+}

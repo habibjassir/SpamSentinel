@@ -1,0 +1,4 @@
+// Lint fixture, not real code. Plain data in, plain data out: allowed in src/core/.
+export function countWords(text: string): number {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
