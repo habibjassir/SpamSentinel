@@ -101,6 +101,9 @@ export const en = {
   scanDelayHelp:
     'How long to wait after comments stop loading, from {min} to {max}. Lower reacts sooner; higher does less work while you scroll fast.',
   scanDelayInvalid: 'Enter a whole number from {min} to {max}.',
+
+  nextButton: 'Next suspicious',
+  panelPosition: '{index} of {count} suspicious',
 };
 
 export type Messages = { readonly [K in keyof typeof en]: string };

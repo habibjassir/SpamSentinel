@@ -104,4 +104,7 @@ export const es: Messages = {
   scanDelayHelp:
     'Cuánto esperar después de que los comentarios dejan de cargarse, de {min} a {max}. Un valor bajo reacciona antes; uno alto trabaja menos mientras bajas rápido.',
   scanDelayInvalid: 'Escribe un número entero de {min} a {max}.',
+
+  nextButton: 'Siguiente sospechoso',
+  panelPosition: '{index} de {count} sospechosos',
 };

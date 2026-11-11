@@ -16,3 +16,5 @@ export type { PageController } from './controller.ts';
 export { createScanObserver } from './observer.ts';
 export type { ScanObserver } from './observer.ts';
 export { VIDEO_PATH, isVideoPage } from './selectors.ts';
+export { flaggedComments, nextFlagged, positionOf } from './navigator.ts';
+export type { FlaggedPosition } from './navigator.ts';

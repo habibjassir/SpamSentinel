@@ -9,6 +9,8 @@ beforeEach(() => {
 const shadow = () => document.getElementById(PANEL_HOST_ID)?.shadowRoot;
 const button = () => shadow()?.querySelector('button');
 const status = () => shadow()?.querySelector('[role="status"]');
+const nextButton = () => shadow()?.querySelectorAll('button')[1];
+const position = () => shadow()?.querySelector('.position');
 
 describe('floating panel', () => {
   it('mounts once, in a shadow root, with the scan button', () => {
@@ -42,6 +44,40 @@ describe('floating panel', () => {
     expect(status()?.textContent).toBe(
       'No comments loaded yet. Scroll down to the comments and try again.',
     );
+  });
+
+  it('has a "Next suspicious" button, disabled until something is flagged', () => {
+    const onNext = vi.fn();
+    const panel = createPanel(document, messages.en, () => {}, onNext);
+    expect(nextButton()?.textContent).toBe('Next suspicious');
+    expect(nextButton()?.disabled).toBe(true);
+
+    panel.showResult({ total: 68, flagged: 0 });
+    expect(nextButton()?.disabled).toBe(true);
+    panel.showResult({ total: 68, flagged: 16 });
+    expect(nextButton()?.disabled).toBe(false);
+    nextButton()?.click();
+    expect(onNext).toHaveBeenCalledOnce();
+  });
+
+  it('shows the position in both languages and hides it on reset', () => {
+    const panel = createPanel(
+      document,
+      messages.en,
+      () => {},
+      () => {},
+    );
+    expect(position()?.textContent).toBe('');
+    panel.showPosition(3, 16);
+    expect(position()?.textContent).toBe('3 of 16 suspicious');
+    panel.setMessages(messages.es);
+    expect(position()?.textContent).toBe('3 de 16 sospechosos');
+    panel.showPosition(null, 16);
+    expect(position()?.textContent).toBe('');
+    panel.showPosition(2, 16);
+    panel.reset();
+    expect(position()?.textContent).toBe('');
+    expect(nextButton()?.disabled).toBe(true);
   });
 
   it('can be removed', () => {
