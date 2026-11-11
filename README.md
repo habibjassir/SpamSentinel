@@ -84,4 +84,7 @@ The first `pnpm e2e` needs Playwright's Chromium: `pnpm exec playwright install 
 
 ## License
 
-Not licensed yet.
+[MIT](LICENSE) © 2026 Habib Jassir.
+
+The comment texts in `fixtures/` are public YouTube comments written by third parties,
+pseudonymized and included only as test data. They are not covered by the project's license.

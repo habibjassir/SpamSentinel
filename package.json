@@ -2,6 +2,7 @@
   "name": "spam-sentinel",
   "description": "Highlights likely spam in YouTube comments using deterministic rules. It never reports for you.",
   "version": "0.0.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.18.0",
