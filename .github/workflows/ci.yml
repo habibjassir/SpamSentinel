@@ -55,3 +55,5 @@ jobs:
           name: spam-sentinel-chrome
           path: .output/*-chrome.zip
           if-no-files-found: error
+          # .output/ starts with a dot, which upload-artifact treats as hidden.
+          include-hidden-files: true
