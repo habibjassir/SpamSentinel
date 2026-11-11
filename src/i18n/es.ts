@@ -84,4 +84,15 @@ export const es: Messages = {
   listAdd: 'Agregar',
   listRemoveLabel: 'Quitar {item}',
   listEmpty: 'Todavía no hay nada.',
+
+  panelTitle: 'SpamSentinel',
+  scanButton: 'Buscar spam',
+  panelIdle: 'Pulsa el botón para revisar los comentarios cargados.',
+  panelCounter: '{flagged} de {total} comentarios',
+  panelNoComments:
+    'Todavía no hay comentarios cargados. Baja hasta los comentarios y vuelve a intentarlo.',
+  flaggedLabel: 'Posible spam: {reasons}',
+  reasonKeyword: 'Regla: {pattern} ({category})',
+  reasonKeywordNoCategory: 'Regla: {pattern}',
+  reasonCampaign: 'Menciona {term}, promovido en {count} comentarios marcados',
 };
