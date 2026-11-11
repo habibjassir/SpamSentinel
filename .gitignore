@@ -11,3 +11,6 @@ node_modules/
 coverage/
 test-results/
 playwright-report/
+
+# Raw page captures with real usernames: never commit
+fixtures/*.private.html
