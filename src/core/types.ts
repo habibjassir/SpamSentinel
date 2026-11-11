@@ -45,9 +45,21 @@ export interface KeywordReason {
   pattern: string;
 }
 
-export type Reason = KeywordReason;
+/** The comment mentions a term promoted by several keyword-flagged comments. */
+export interface CampaignReason {
+  detector: 'campaign';
+  /** The term as it is usually written in the seeds, e.g. "Altorum". */
+  term: string;
+  /** Number of keyword-flagged comments (seeds) that mention the term. */
+  seedCount: number;
+  /** Number of different authors among those seeds. */
+  authorCount: number;
+}
 
-export interface Verdict {
+export type Reason = KeywordReason | CampaignReason;
+
+/** `R` narrows the reasons a single detector can produce, e.g. `Verdict<KeywordReason>`. */
+export interface Verdict<R extends Reason = Reason> {
   flagged: boolean;
-  reasons: Reason[];
+  reasons: R[];
 }

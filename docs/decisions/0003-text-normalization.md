@@ -7,7 +7,7 @@
 ## Context
 
 Spammers disguise words to slip past filters: Cyrillic letters that look Latin ("рrеsаlе"),
-invisible characters ("pre​sale"), accents ("présále") and stretched letters
+invisible characters ("pre\u200Bsale"), accents ("présále") and stretched letters
 ("freeeee"). Keyword rules must still match, without flagging legitimate comments.
 
 ## Decision

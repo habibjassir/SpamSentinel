@@ -1,5 +1,12 @@
 import { expect, it } from 'vitest';
-import { DEFAULT_KEYWORD_RULES, compileRules, evaluateKeywords } from '../../src/core/index.ts';
+import {
+  DEFAULT_ALLOWLIST,
+  DEFAULT_CAMPAIGN_OPTIONS,
+  DEFAULT_KEYWORD_RULES,
+  compileRules,
+  evaluateAll,
+  evaluateKeywords,
+} from '../../src/core/index.ts';
 import type { Comment, KeywordRule } from '../../src/core/index.ts';
 import { fixtureComments, toComment } from './fixture.ts';
 
@@ -41,5 +48,23 @@ it(`evaluates 500 comments x 50 rules in under ${BUDGET_MS} ms`, () => {
   const elapsed = performance.now() - start;
 
   console.info(`[performance] 500 comments x 50 rules: ${elapsed.toFixed(1)} ms`);
+  expect(elapsed).toBeLessThan(BUDGET_MS);
+});
+
+it(`evaluateAll (keywords + campaigns) on 500 comments x 50 rules stays under ${BUDGET_MS} ms`, () => {
+  const { rules } = compileRules([...DEFAULT_KEYWORD_RULES, ...extraRules]);
+
+  const start = performance.now();
+  const verdicts = evaluateAll(comments, rules, {
+    keywordsEnabled: true,
+    campaignsEnabled: true,
+    exemptPhrases: ['was a scam'],
+    allowlist: DEFAULT_ALLOWLIST,
+    campaign: DEFAULT_CAMPAIGN_OPTIONS,
+  });
+  const elapsed = performance.now() - start;
+
+  console.info(`[performance] evaluateAll, 500 comments x 50 rules: ${elapsed.toFixed(1)} ms`);
+  expect(verdicts).toHaveLength(500);
   expect(elapsed).toBeLessThan(BUDGET_MS);
 });
