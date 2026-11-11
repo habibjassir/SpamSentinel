@@ -82,6 +82,16 @@ export const en = {
   listAdd: 'Add',
   listRemoveLabel: 'Remove {item}',
   listEmpty: 'Nothing here yet.',
+
+  panelTitle: 'SpamSentinel',
+  scanButton: 'Scan for spam',
+  panelIdle: 'Press the button to check the loaded comments.',
+  panelCounter: '{flagged} of {total} comments',
+  panelNoComments: 'No comments loaded yet. Scroll down to the comments and try again.',
+  flaggedLabel: 'Possible spam: {reasons}',
+  reasonKeyword: 'Rule: {pattern} ({category})',
+  reasonKeywordNoCategory: 'Rule: {pattern}',
+  reasonCampaign: 'Mentions {term}, promoted in {count} flagged comments',
 };
 
 export type Messages = { readonly [K in keyof typeof en]: string };
