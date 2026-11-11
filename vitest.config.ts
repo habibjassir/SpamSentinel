@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import { WxtVitest } from 'wxt/testing/vitest-plugin';
 
-// Two projects with different environments:
+// Three projects with different environments:
 // - core: no browser at all, so the pure core cannot lean on browser APIs even in tests.
+// - page: a simulated DOM (happy-dom) for the YouTube page reader.
 // - extension: WXT's plugin provides an in-memory fake browser (storage, i18n code).
 export default defineConfig({
   test: {
@@ -11,6 +12,13 @@ export default defineConfig({
         test: {
           name: 'core',
           include: ['src/core/**/*.test.ts', 'tests/unit/**/*.test.ts'],
+        },
+      },
+      {
+        test: {
+          name: 'page',
+          environment: 'happy-dom',
+          include: ['src/page/**/*.test.ts'],
         },
       },
       {
