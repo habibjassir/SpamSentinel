@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "e2e": "playwright test",
     "check:manifest": "node scripts/check-manifest.mjs",
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm check:manifest"

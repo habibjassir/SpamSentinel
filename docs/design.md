@@ -340,7 +340,7 @@ muestra.
 - [ ] Un caso real de suplantación del canal (enlace o captura). Hasta entonces el incremento 8 se prueba solo con casos inventados.
 - [ ] Confirmar si los autores de los comentarios de spam también quedan con seudónimo en el repositorio público. Hoy quedan así por precaución.
 - [ ] Qué selectores usa el panel de comentarios de Shorts.
-- [ ] Si la meta de 200 ms se cumple con 500 comentarios y 50 reglas.
+- [x] Si la meta de 200 ms se cumple con 500 comentarios y 50 reglas: sí, unos 25 ms en local (incremento 1).
 - [x] Qué selectores identifican hoy un comentario y sus respuestas en un video normal.
 
 ## Fuentes
