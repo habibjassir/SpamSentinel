@@ -10,6 +10,9 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/core/**'],
       exclude: ['src/core/**/*.test.ts'],
+      reporter: ['text', 'html'],
+      // Acceptance criterion (Increment 1): at least 90% line coverage of src/core/.
+      thresholds: { lines: 90 },
     },
   },
 });
