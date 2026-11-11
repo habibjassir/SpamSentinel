@@ -1,3 +1,4 @@
+import type { CampaignOptions } from './campaign.ts';
 import type { KeywordRule } from './types.ts';
 
 /**
@@ -49,3 +50,23 @@ export const DEFAULT_KEYWORD_RULES: readonly KeywordRule[] = [
     enabled: true,
   },
 ];
+
+/**
+ * Names that never become campaign terms (compared in any letter case).
+ * Users can edit this list.
+ */
+export const DEFAULT_ALLOWLIST: readonly string[] = [
+  'Bitcoin',
+  'BTC',
+  'Ethereum',
+  'ETH',
+  'Solana',
+  'SOL',
+];
+
+/** Starting thresholds; to be tuned with more samples (docs/design.md). */
+export const DEFAULT_CAMPAIGN_OPTIONS: CampaignOptions = {
+  minSeeds: 3,
+  minTermLength: 3,
+  caseSensitiveMaxLength: 4,
+};

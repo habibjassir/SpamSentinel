@@ -1,6 +1,6 @@
 // Text normalization: makes disguised spellings comparable to plain ones.
 // The same function is applied to comment text, rule patterns and exempt
-// phrases, so matching stays symmetric.
+// phrases, so matching stays symmetric. See docs/decisions/0003-text-normalization.md.
 
 /** Zero-width spaces and joiners, soft hyphens, bidi controls, BOM, variation selectors... */
 const INVISIBLE = /[\p{Default_Ignorable_Code_Point}\p{Cf}]/gu;
@@ -14,11 +14,11 @@ const LONG_LETTER_RUN = /(\p{L})\1{2,}/gu;
 const WHITESPACE = /\s+/gu;
 
 /**
- * Lowercase Cyrillic and Greek letters that look like Latin letters.
+ * Cyrillic and Greek letters that look like Latin letters, in both cases.
  * Conservative on purpose: only letters that are near-identical in common fonts.
  */
 const LOOK_ALIKES: Readonly<Record<string, string>> = {
-  // Cyrillic
+  // Cyrillic, lowercase
   а: 'a',
   с: 'c',
   ԁ: 'd',
@@ -35,7 +35,23 @@ const LOOK_ALIKES: Readonly<Record<string, string>> = {
   у: 'y',
   х: 'x',
   ԝ: 'w',
-  // Greek
+  // Cyrillic, uppercase
+  А: 'A',
+  В: 'B',
+  С: 'C',
+  Е: 'E',
+  Н: 'H',
+  І: 'I',
+  Ј: 'J',
+  К: 'K',
+  М: 'M',
+  О: 'O',
+  Р: 'P',
+  Ѕ: 'S',
+  Т: 'T',
+  Х: 'X',
+  У: 'Y',
+  // Greek, lowercase
   α: 'a',
   ε: 'e',
   ι: 'i',
@@ -46,32 +62,61 @@ const LOOK_ALIKES: Readonly<Record<string, string>> = {
   τ: 't',
   υ: 'u',
   χ: 'x',
+  // Greek, uppercase
+  Α: 'A',
+  Β: 'B',
+  Ε: 'E',
+  Ζ: 'Z',
+  Η: 'H',
+  Ι: 'I',
+  Κ: 'K',
+  Μ: 'M',
+  Ν: 'N',
+  Ο: 'O',
+  Ρ: 'P',
+  Τ: 'T',
+  Υ: 'Y',
+  Χ: 'X',
 };
 
 const LOOK_ALIKE_PATTERN = new RegExp(`[${Object.keys(LOOK_ALIKES).join('')}]`, 'gu');
 
+const removeDiacritics = (text: string) =>
+  text.normalize('NFD').replace(COMBINING_MARKS, '').normalize('NFC');
+
+const mapLookAlikes = (text: string) =>
+  text.replace(LOOK_ALIKE_PATTERN, (ch) => LOOK_ALIKES[ch] ?? ch);
+
+const collapseRepeats = (text: string) => text.replace(LONG_LETTER_RUN, '$1$1');
+
 /**
- * Normalizes text for matching:
+ * Same cleanup as `normalize`, but keeps letter case. The campaign detector
+ * needs it to tell capitalized words ("Altorum", "ALT") from ordinary ones.
+ *
  * 1. Unicode NFKC (fullwidth letters and ligatures become plain letters)
  * 2. Remove invisible characters
- * 3. Lowercase
- * 4. Remove accents and other diacritics
- * 5. Map Cyrillic and Greek look-alike letters to Latin
- * 6. Collapse letters repeated 3+ times down to 2 ("freeee" -> "free")
- * 7. Collapse whitespace and trim
+ * 3. Remove accents and other diacritics
+ * 4. Map Cyrillic and Greek look-alike letters to Latin
+ * 5. Collapse letters repeated 3+ times down to 2 ("freeee" -> "free")
+ * 6. Collapse whitespace and trim
+ */
+export function normalizePreservingCase(text: string): string {
+  const cleaned = text.normalize('NFKC').replace(INVISIBLE, '');
+  return collapseRepeats(mapLookAlikes(removeDiacritics(cleaned)))
+    .replace(WHITESPACE, ' ')
+    .trim();
+}
+
+/**
+ * Normalizes text for matching: `normalizePreservingCase`, then lowercase.
  *
+ * Diacritics, look-alikes and repeats are handled again after lowercasing,
+ * because lowercasing can create them (Turkish "İ" becomes "i" plus a dot,
+ * "FREEee" only becomes a single run once lowercased).
  * The function is idempotent: normalizing twice gives the same result.
  */
 export function normalize(text: string): string {
-  return text
-    .normalize('NFKC')
-    .replace(INVISIBLE, '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(COMBINING_MARKS, '')
-    .normalize('NFC')
-    .replace(LOOK_ALIKE_PATTERN, (ch) => LOOK_ALIKES[ch] ?? ch)
-    .replace(LONG_LETTER_RUN, '$1$1')
-    .replace(WHITESPACE, ' ')
-    .trim();
+  return collapseRepeats(
+    mapLookAlikes(removeDiacritics(normalizePreservingCase(text).toLowerCase())),
+  );
 }

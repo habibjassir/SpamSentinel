@@ -4,7 +4,7 @@ import { ESLint } from 'eslint';
 import { describe, expect, it } from 'vitest';
 
 // The boundary rule protects src/core/ from browser, DOM and WXT APIs
-// (CLAUDE.md rule 3). These tests lint fixture text *as if* it were a file in
+// (docs/design.md, "Arquitectura"). These tests lint fixture text *as if* it were a file in
 // src/core/, so a broken ESLint config is caught here instead of silently
 // letting browser code into the core.
 const root = fileURLToPath(new URL('../..', import.meta.url));

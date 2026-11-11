@@ -47,7 +47,7 @@ describe('evaluateKeywords', () => {
 
   it('matches through look-alike letters, invisible characters and accents', () => {
     expect(evaluate('рrеsаlе', [rule()]).flagged).toBe(true);
-    expect(evaluate('pre​sale', [rule()]).flagged).toBe(true);
+    expect(evaluate('pre\u200Bsale', [rule()]).flagged).toBe(true);
     expect(evaluate('présálé', [rule()]).flagged).toBe(true);
   });
 

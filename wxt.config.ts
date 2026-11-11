@@ -7,7 +7,7 @@ export default defineConfig({
     name: 'SpamSentinel',
     description:
       'Highlights likely spam in YouTube comments using deterministic rules. It never reports for you.',
-    // Minimal permissions (CLAUDE.md rule 7). Host access comes only from the
+    // Minimal permissions (see README, "Permissions"). Host access comes only from the
     // content script match pattern in entrypoints/content.ts.
     permissions: ['storage'],
   },

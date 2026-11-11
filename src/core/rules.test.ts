@@ -19,7 +19,7 @@ describe('validateRule', () => {
 
   it('rejects an empty or blank pattern', () => {
     expect(validateRule(rule({ pattern: '' }))[0]?.message).toMatch(/empty/i);
-    expect(validateRule(rule({ pattern: '  ​ ' }))[0]?.message).toMatch(/empty/i);
+    expect(validateRule(rule({ pattern: '  \u200B ' }))[0]?.message).toMatch(/empty/i);
   });
 
   it('rejects an empty id', () => {

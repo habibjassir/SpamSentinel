@@ -17,7 +17,7 @@ export function evaluateKeywords(
   comment: Comment,
   rules: readonly CompiledRule[],
   exemptPhrases: readonly string[],
-): Verdict {
+): Verdict<KeywordReason> {
   const text = normalize(comment.text);
 
   for (const phrase of exemptPhrases) {

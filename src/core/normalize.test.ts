@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalize } from './normalize.ts';
+import { normalize, normalizePreservingCase } from './normalize.ts';
 
 describe('normalize', () => {
   it('lowercases text', () => {
@@ -19,9 +19,9 @@ describe('normalize', () => {
   });
 
   it('removes zero-width and other invisible characters', () => {
-    expect(normalize('pre​sa‍le﻿')).toBe('presale');
-    expect(normalize('bull⁠ run')).toBe('bull run');
-    expect(normalize('pre­sale')).toBe('presale');
+    expect(normalize('pre\u200Bsa\u200Dle\uFEFF')).toBe('presale');
+    expect(normalize('bull\u2060 run')).toBe('bull run');
+    expect(normalize('pre\u00ADsale')).toBe('presale');
   });
 
   it('collapses whitespace and trims', () => {
@@ -43,8 +43,39 @@ describe('normalize', () => {
     expect(normalize('présale')).toBe('presale');
   });
 
+  it('collapses repeated letters regardless of their case', () => {
+    expect(normalize('FREEee')).toBe('free');
+  });
+
   it('is idempotent', () => {
-    const once = normalize('  Ｐrésálé ​ FREEEE  ');
-    expect(normalize(once)).toBe(once);
+    for (const text of ['  Ｐrésálé \u200B FREEEE  ', 'FREEee', 'İstanbul', 'ВТС']) {
+      const once = normalize(text);
+      expect(normalize(once)).toBe(once);
+    }
+  });
+});
+
+describe('normalizePreservingCase', () => {
+  it('keeps letter case', () => {
+    expect(normalizePreservingCase('Join ALT and Altorum')).toBe('Join ALT and Altorum');
+  });
+
+  it('applies the same cleanup as normalize, except lowercasing', () => {
+    expect(normalizePreservingCase(' Al\u200Btórum  ')).toBe('Altorum');
+    expect(normalizePreservingCase('ＡＬＴ')).toBe('ALT');
+    expect(normalizePreservingCase('Altooooorum')).toBe('Altoorum');
+  });
+
+  it('maps uppercase Cyrillic and Greek look-alikes to Latin capitals', () => {
+    // "ALT" written with Cyrillic А and Т
+    expect(normalizePreservingCase('АLТ')).toBe('ALT');
+    // "BTC" written with Greek Β, Τ and Cyrillic С
+    expect(normalizePreservingCase('ΒΤС')).toBe('BTC');
+  });
+
+  it('agrees with normalize once lowercased', () => {
+    for (const text of ['АLТorum', 'ΡRΕSΑLΕ', 'Inversión', 'FREEee']) {
+      expect(normalize(normalizePreservingCase(text))).toBe(normalize(text));
+    }
   });
 });

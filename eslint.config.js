@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import wxtAutoImports from './.wxt/eslint-auto-imports.mjs';
 
 const CORE_MESSAGE =
-  'src/core/ must stay pure: no browser, DOM or WXT APIs (CLAUDE.md rule 3). Pass plain data in and return plain data out.';
+  'src/core/ must stay pure: no browser, DOM or WXT APIs. Pass plain data in and return plain data out.';
 
 // Globals that src/core/ must never touch. Explicit entries give a clear
 // message; no-undef below catches every other browser or WXT global.
