@@ -32,8 +32,19 @@ jobs:
       - name: Verify (typecheck, lint, test, build, manifest check)
         run: pnpm verify
 
+      # --with-deps also installs system libraries through apt, which fails when
+      # Ubuntu's package mirrors are unreachable. Retry, then fall back to the
+      # browser alone: the runner image already ships Chrome's libraries.
       - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        timeout-minutes: 8
+        run: |
+          for attempt in 1 2 3; do
+            if pnpm exec playwright install --with-deps chromium; then exit 0; fi
+            echo "::warning::Attempt $attempt to install Chromium with system packages failed."
+            sleep 20
+          done
+          echo "::warning::Installing Chromium without system packages."
+          pnpm exec playwright install chromium
 
       - name: End-to-end tests
         run: pnpm e2e
