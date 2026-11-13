@@ -337,7 +337,7 @@ muestra.
 
 ## Pendientes
 
-- [ ] Un caso real de suplantación del canal (enlace o captura). Hasta entonces el incremento 8 se prueba solo con casos inventados.
+- [ ] Un caso real de suplantación del canal (enlace o captura). El incremento 8 está hecho y probado solo con casos inventados; con un caso real se agrega como prueba y se ajustan los umbrales.
 - [ ] Confirmar si los autores de los comentarios de spam también quedan con seudónimo en el repositorio público. Hoy quedan así por precaución.
 - [ ] Qué selectores usa el panel de comentarios de Shorts.
 - [x] Si la meta de 200 ms se cumple con 500 comentarios y 50 reglas: sí, unos 25 ms en local (incremento 1).

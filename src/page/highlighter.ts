@@ -31,6 +31,11 @@ export function formatReason(reason: Reason, t: Messages): string {
   if (reason.detector === 'campaign') {
     return format(t.reasonCampaign, { term: reason.term, count: reason.seedCount });
   }
+  if (reason.detector === 'impersonation') {
+    return format(reason.contact ? t.reasonImpersonationContact : t.reasonImpersonation, {
+      channel: reason.channel,
+    });
+  }
   return reason.category
     ? format(t.reasonKeyword, { pattern: reason.pattern, category: reason.category })
     : format(t.reasonKeywordNoCategory, { pattern: reason.pattern });

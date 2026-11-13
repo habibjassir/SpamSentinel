@@ -1,7 +1,14 @@
 // Public entry of the pure core: plain data in, plain data out.
 export { detectCampaigns, extractCandidates } from './campaign.ts';
 export type { CampaignOptions, CampaignResult, CampaignTerm } from './campaign.ts';
-export { DEFAULT_ALLOWLIST, DEFAULT_CAMPAIGN_OPTIONS, DEFAULT_KEYWORD_RULES } from './defaults.ts';
+export {
+  DEFAULT_ALLOWLIST,
+  DEFAULT_CAMPAIGN_OPTIONS,
+  DEFAULT_IMPERSONATION_OPTIONS,
+  DEFAULT_KEYWORD_RULES,
+} from './defaults.ts';
+export { asksForContact, detectImpersonation, handleCore } from './impersonation.ts';
+export type { Channel, ImpersonationOptions } from './impersonation.ts';
 export { evaluateAll } from './evaluate.ts';
 export type { EvaluationSettings } from './evaluate.ts';
 export { evaluateKeywords } from './keywords.ts';
@@ -11,6 +18,7 @@ export type { CompiledRule, CompiledRules, RuleError, RuleErrorCode } from './ru
 export type {
   CampaignReason,
   Comment,
+  ImpersonationReason,
   KeywordReason,
   KeywordRule,
   MatchMode,

@@ -107,4 +107,11 @@ export const es: Messages = {
 
   nextButton: 'Siguiente sospechoso',
   panelPosition: '{index} de {count} sospechosos',
+
+  reasonImpersonation: 'El nombre se parece al canal {channel}, pero no es el canal',
+  reasonImpersonationContact:
+    'El nombre se parece al canal {channel}, pero no es el canal, y pide contacto',
+  impersonationToggle: 'Suplantación del canal',
+  impersonationToggleHelp:
+    'Marca a los autores cuyo handle copia el del canal del video. Una copia casi exacta se marca sola; una parecida, solo si el comentario pide contacto.',
 };

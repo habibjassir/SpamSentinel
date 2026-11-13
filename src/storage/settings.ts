@@ -19,14 +19,20 @@ export function migrateToV2(value: unknown): unknown {
   return { autoScan: true, scanDelayMs: SCAN_DELAY_DEFAULT_MS, ...value };
 }
 
+/** Version 2 to 3 (Increment 8): adds the channel impersonation switch. */
+export function migrateToV3(value: unknown): unknown {
+  if (typeof value !== 'object' || value === null) return value;
+  return { impersonationEnabled: true, ...value };
+}
+
 /**
  * Versioned so the shape can change: WXT runs `migrations` on startup, from the
  * stored version up to `version`. Stored as unknown: it is validated on read.
  * Exported for tests.
  */
 export const settingsStorageItem = storage.defineItem<unknown>(SETTINGS_KEY, {
-  version: 2,
-  migrations: { 2: migrateToV2 },
+  version: 3,
+  migrations: { 2: migrateToV2, 3: migrateToV3 },
 });
 const settingsItem = settingsStorageItem;
 

@@ -14,5 +14,6 @@ export function defaultSettings(language: Language): Settings {
     allowlist: [...DEFAULT_ALLOWLIST],
     autoScan: true,
     scanDelayMs: SCAN_DELAY_DEFAULT_MS,
+    impersonationEnabled: true,
   };
 }

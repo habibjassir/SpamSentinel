@@ -72,6 +72,7 @@ describe('defaultSettings', () => {
     expect(settings.exemptPhrases).toEqual([]);
     expect(settings.autoScan).toBe(true);
     expect(settings.scanDelayMs).toBe(500);
+    expect(settings.impersonationEnabled).toBe(true);
   });
 
   it('returns fresh copies, so editing one result never changes the defaults', () => {

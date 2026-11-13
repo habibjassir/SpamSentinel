@@ -17,6 +17,8 @@ export const SELECTORS = {
   contentText: '#content-text',
   /** Channel link of the video owner. The author badge does not identify the owner. */
   videoOwnerLink: 'ytd-video-owner-renderer a[href^="/@"]',
+  /** Channel display name of the video owner. */
+  videoOwnerName: 'ytd-video-owner-renderer ytd-channel-name a',
 } as const;
 
 /** Path of a normal video page ("/watch?v=…"). Shorts ("/shorts/…") come in a later increment. */

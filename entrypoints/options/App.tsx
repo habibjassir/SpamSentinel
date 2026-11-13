@@ -61,6 +61,7 @@ export default function App() {
         t={t}
         keywordsEnabled={settings.keywordsEnabled}
         campaignsEnabled={settings.campaignsEnabled}
+        impersonationEnabled={settings.impersonationEnabled}
         onChange={update}
       />
 

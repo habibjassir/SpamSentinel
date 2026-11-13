@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_ALLOWLIST,
   DEFAULT_CAMPAIGN_OPTIONS,
+  DEFAULT_IMPERSONATION_OPTIONS,
   DEFAULT_KEYWORD_RULES,
   compileRules,
   detectCampaigns,
@@ -16,12 +17,18 @@ const { rules } = compileRules(DEFAULT_KEYWORD_RULES);
 const comments = fixtureComments.map(toComment);
 const labels = fixtureComments.map((c) => c.label);
 
+/** The fixture video's channel (public). */
+const CHANNEL = { handle: '@Alejandrosalomondrin', name: 'Alejandro Salomon' };
+
 const settings = (overrides: Partial<EvaluationSettings> = {}): EvaluationSettings => ({
   keywordsEnabled: true,
   campaignsEnabled: true,
   exemptPhrases: [],
   allowlist: DEFAULT_ALLOWLIST,
   campaign: DEFAULT_CAMPAIGN_OPTIONS,
+  impersonationEnabled: true,
+  channel: CHANNEL,
+  impersonation: DEFAULT_IMPERSONATION_OPTIONS,
   ...overrides,
 });
 
@@ -63,8 +70,20 @@ describe('campaign detector against fixtures/comments-WkKhJx0Rz1I.public.json', 
     expect(terms.map((t) => t.term)).not.toContain('mark');
   });
 
+  it('the impersonation detector flags none of the 75 real comments', () => {
+    const verdicts = evaluateAll(comments, rules, settings());
+    const impersonation = verdicts
+      .flatMap((v) => v.reasons)
+      .filter((r) => r.detector === 'impersonation');
+    expect(impersonation).toEqual([]);
+  });
+
   it('with the campaign detector disabled, results equal Increment 1 (15 and 0)', () => {
-    const verdicts = evaluateAll(comments, rules, settings({ campaignsEnabled: false }));
+    const verdicts = evaluateAll(
+      comments,
+      rules,
+      settings({ campaignsEnabled: false, impersonationEnabled: false }),
+    );
     expect(verdicts).toEqual(keywordVerdicts(comments));
     expect(count(verdicts, 'spam')).toBe(15);
     expect(count(verdicts, 'legit')).toBe(0);

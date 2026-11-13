@@ -2,6 +2,7 @@ import { expect, it } from 'vitest';
 import {
   DEFAULT_ALLOWLIST,
   DEFAULT_CAMPAIGN_OPTIONS,
+  DEFAULT_IMPERSONATION_OPTIONS,
   DEFAULT_KEYWORD_RULES,
   compileRules,
   evaluateAll,
@@ -61,6 +62,9 @@ it(`evaluateAll (keywords + campaigns) on 500 comments x 50 rules stays under ${
     exemptPhrases: ['was a scam'],
     allowlist: DEFAULT_ALLOWLIST,
     campaign: DEFAULT_CAMPAIGN_OPTIONS,
+    impersonationEnabled: true,
+    channel: { handle: '@Alejandrosalomondrin', name: 'Alejandro Salomon' },
+    impersonation: DEFAULT_IMPERSONATION_OPTIONS,
   });
   const elapsed = performance.now() - start;
 
