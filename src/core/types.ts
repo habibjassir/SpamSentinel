@@ -56,7 +56,18 @@ export interface CampaignReason {
   authorCount: number;
 }
 
-export type Reason = KeywordReason | CampaignReason;
+/** The author's handle copies the video's channel (see impersonation.ts). */
+export interface ImpersonationReason {
+  detector: 'impersonation';
+  /** The impersonating author's handle. */
+  author: string;
+  /** The real channel's handle. */
+  channel: string;
+  /** Whether the comment asks readers to get in touch. */
+  contact: boolean;
+}
+
+export type Reason = KeywordReason | CampaignReason | ImpersonationReason;
 
 /** `R` narrows the reasons a single detector can produce, e.g. `Verdict<KeywordReason>`. */
 export interface Verdict<R extends Reason = Reason> {

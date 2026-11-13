@@ -5,6 +5,7 @@ import {
   SETTINGS_KEY,
   loadSettings,
   migrateToV2,
+  migrateToV3,
   saveSettings,
   settingsStorageItem,
   watchSettings,
@@ -59,7 +60,12 @@ describe('settings storage', () => {
     // Version 1 data has no version metadata, as stored by Increment 3.
     await fakeBrowser.storage.local.set({ [storedKey]: v1 });
     await settingsStorageItem.migrate();
-    expect(await loadSettings('en-US')).toEqual({ ...v1, autoScan: true, scanDelayMs: 500 });
+    expect(await loadSettings('en-US')).toEqual({
+      ...v1,
+      autoScan: true,
+      scanDelayMs: 500,
+      impersonationEnabled: true,
+    });
   });
 
   it('notifies watchers with validated settings', async () => {
@@ -69,6 +75,18 @@ describe('settings storage', () => {
     await saveSettings(settings);
     await vi.waitFor(() => expect(callback).toHaveBeenCalledWith(settings));
     unwatch();
+  });
+});
+
+describe('migrateToV3', () => {
+  it('adds the impersonation switch and keeps everything else', () => {
+    expect(migrateToV3({ autoScan: false, scanDelayMs: 1000 })).toEqual({
+      autoScan: false,
+      scanDelayMs: 1000,
+      impersonationEnabled: true,
+    });
+    expect(migrateToV3({ impersonationEnabled: false })).toEqual({ impersonationEnabled: false });
+    expect(migrateToV3(null)).toBeNull();
   });
 });
 

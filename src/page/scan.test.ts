@@ -156,3 +156,24 @@ describe('formatReason', () => {
     expect(formatReason({ ...keyword, category: '' }, messages.en)).toBe('Rule: presale');
   });
 });
+
+describe('impersonation on the page', () => {
+  it('reads the channel name from the page', async () => {
+    const { readVideoOwnerName } = await import('./reader.ts');
+    expect(readVideoOwnerName(doc)).toBe('Alejandro Salomon');
+  });
+
+  it('flags an author whose handle copies the channel, with the reason', () => {
+    const thread = [...doc.querySelectorAll('ytd-comment-thread-renderer')].find(
+      (t) => t.querySelector(':scope > #comment-container #content-text')?.textContent === 'Prueba',
+    )!;
+    thread.querySelector('#author-text')!.setAttribute('href', '/@alejandro_salomon');
+    expect(scanPage(doc, defaultSettings('en'))).toEqual({ total: 68, flagged: 17 });
+    expect(
+      labels().some((l) => l.textContent?.includes('looks like the channel @Alejandrosalomondrin')),
+    ).toBe(true);
+
+    const off = { ...defaultSettings('en'), impersonationEnabled: false };
+    expect(scanPage(doc, off)).toEqual({ total: 68, flagged: 16 });
+  });
+});

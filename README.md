@@ -29,7 +29,7 @@ Open the extension's options (right-click the toolbar icon → **Options**) to:
   word limits);
 - manage exempt phrases (comments containing them are never flagged) and allowed names (never
   treated as campaign terms);
-- turn each detector on or off;
+- turn each detector on or off (keyword rules, repeated campaign, channel impersonation);
 - turn automatic scanning on or off, and set how long to wait after comments stop loading
   (250 to 5000 ms, default 500);
 - switch the interface between Spanish and English.

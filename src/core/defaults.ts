@@ -1,4 +1,5 @@
 import type { CampaignOptions } from './campaign.ts';
+import type { ImpersonationOptions } from './impersonation.ts';
 import type { KeywordRule } from './types.ts';
 
 /**
@@ -69,4 +70,46 @@ export const DEFAULT_CAMPAIGN_OPTIONS: CampaignOptions = {
   minSeeds: 3,
   minTermLength: 3,
   caseSensitiveMaxLength: 4,
+};
+
+/**
+ * Starting values for the impersonation detector. Not validated with real
+ * cases yet; tune them when real impersonation comments are collected.
+ * Contact patterns run on normalized text (lowercase, no accents).
+ */
+export const DEFAULT_IMPERSONATION_OPTIONS: ImpersonationOptions = {
+  nearMaxEdits: 1,
+  minNearLength: 6,
+  similarMaxEdits: 2,
+  minContainLength: 5,
+  suffixes: [
+    'official',
+    'oficial',
+    'ofc',
+    'real',
+    'tv',
+    'team',
+    'support',
+    'soporte',
+    'channel',
+    'canal',
+  ],
+  contactPatterns: [
+    'whats\\s?app',
+    '\\bwsp\\b',
+    'wa\\.me',
+    'telegram',
+    '\\bt\\.me\\/',
+    'escribeme',
+    'escribime',
+    'escribanme',
+    'contactame',
+    'contact me',
+    'write to me',
+    'text me',
+    'dm me',
+    'message me',
+    '\\+\\d[\\d\\s().-]{7,}\\d',
+    '\\b\\d{10,}\\b',
+  ],
 };

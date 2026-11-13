@@ -104,6 +104,13 @@ export const en = {
 
   nextButton: 'Next suspicious',
   panelPosition: '{index} of {count} suspicious',
+
+  reasonImpersonation: 'Name looks like the channel {channel}, but it is not the channel',
+  reasonImpersonationContact:
+    'Name looks like the channel {channel}, but it is not the channel, and asks for contact',
+  impersonationToggle: 'Channel impersonation',
+  impersonationToggleHelp:
+    'Flag authors whose handle copies this video’s channel. A near copy is flagged on its own; a similar one only if the comment asks for contact.',
 };
 
 export type Messages = { readonly [K in keyof typeof en]: string };

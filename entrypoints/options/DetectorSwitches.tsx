@@ -4,10 +4,21 @@ interface Props {
   t: Messages;
   keywordsEnabled: boolean;
   campaignsEnabled: boolean;
-  onChange: (changes: { keywordsEnabled?: boolean; campaignsEnabled?: boolean }) => void;
+  impersonationEnabled: boolean;
+  onChange: (changes: {
+    keywordsEnabled?: boolean;
+    campaignsEnabled?: boolean;
+    impersonationEnabled?: boolean;
+  }) => void;
 }
 
-export function DetectorSwitches({ t, keywordsEnabled, campaignsEnabled, onChange }: Props) {
+export function DetectorSwitches({
+  t,
+  keywordsEnabled,
+  campaignsEnabled,
+  impersonationEnabled,
+  onChange,
+}: Props) {
   return (
     <section aria-labelledby="detectors-heading">
       <h2 id="detectors-heading">{t.detectorsHeading}</h2>
@@ -33,6 +44,18 @@ export function DetectorSwitches({ t, keywordsEnabled, campaignsEnabled, onChang
         <span>
           <strong>{t.campaignsToggle}</strong>
           <span className="muted">{t.campaignsToggleHelp}</span>
+        </span>
+      </label>
+
+      <label className="switch">
+        <input
+          type="checkbox"
+          checked={impersonationEnabled}
+          onChange={(e) => onChange({ impersonationEnabled: e.target.checked })}
+        />
+        <span>
+          <strong>{t.impersonationToggle}</strong>
+          <span className="muted">{t.impersonationToggleHelp}</span>
         </span>
       </label>
 

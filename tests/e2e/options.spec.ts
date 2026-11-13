@@ -67,3 +67,11 @@ test('the scan delay is saved when valid and rejected when out of range', async 
   await page.reload();
   await expect(page.getByLabel('Wait before scanning (milliseconds)')).toHaveValue('1000');
 });
+
+test('the channel impersonation switch survives a reload', async ({ optionsPage: page }) => {
+  const toggle = page.getByRole('checkbox', { name: 'Channel impersonation' });
+  await expect(toggle).toBeChecked();
+  await toggle.uncheck();
+  await page.reload();
+  await expect(page.getByRole('checkbox', { name: 'Channel impersonation' })).not.toBeChecked();
+});

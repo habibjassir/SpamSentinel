@@ -63,6 +63,12 @@ export function readComments(root: ParentNode): ReadComment[] {
   return result;
 }
 
+/** The video owner's channel display name, or `null` if it is not on the page. */
+export function readVideoOwnerName(root: ParentNode): string | null {
+  const name = root.querySelector(SELECTORS.videoOwnerName)?.textContent?.trim();
+  return name ? name : null;
+}
+
 /** The video owner's channel handle, e.g. "@channel", or `null` if it is not on the page. */
 export function readVideoOwner(root: ParentNode): string | null {
   return handleFrom(root.querySelector(SELECTORS.videoOwnerLink)) || null;

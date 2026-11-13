@@ -44,6 +44,8 @@ export const SettingsSchema = z
     /** Scan automatically as comments load (version 2). */
     autoScan: z.boolean(),
     scanDelayMs: z.number().int().min(SCAN_DELAY_MIN_MS).max(SCAN_DELAY_MAX_MS),
+    /** Channel impersonation detector (version 3). */
+    impersonationEnabled: z.boolean(),
   })
   .superRefine((settings, ctx) => {
     const seen = new Set<string>();
